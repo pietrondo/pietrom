@@ -30,6 +30,8 @@ class Config:
     GRAY = (128, 128, 128)
     DARK_GRAY = (64, 64, 64)
     LIGHT_GRAY = (192, 192, 192)
+    DARK_RED = (128, 0, 0)
+    DARK_BLUE = (0, 0, 128)
     
     # Retro DOS colors
     DOS_GREEN = (0, 255, 0)
@@ -55,9 +57,18 @@ class Config:
     ROCKET_DAMAGE = 100
     
     # Enemy settings
-    MUTANT_HEALTH = 50
-    ROBOT_HEALTH = 75
-    MERCENARY_HEALTH = 100
+    ENEMY_SPEED = 2.0
+    ENEMY_HEALTH = 50
+    ENEMY_DAMAGE = 20
+    
+    # Specific enemy types
+    MUTANT_HEALTH = 40
+    ROBOT_HEALTH = 80
+    MERCENARY_HEALTH = 60
+    
+    # Debug settings
+    DEBUG_MODE = False
+    DEBUG_DRAW_GRID = False
     
     # Audio settings
     MASTER_VOLUME = 0.7

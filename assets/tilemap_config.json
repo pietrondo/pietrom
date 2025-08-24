@@ -1,0 +1,73 @@
+{
+  "tile_size": 32,
+  "spritesheet": "assets/sprites/level.png",
+  "tile_groups": {
+    "ground_base": {
+      "row": 1,
+      "cols": [0, 7]
+    },
+    "ground_worn": {
+      "row": 2,
+      "cols": [0, 7]
+    },
+    "walls_basic": {
+      "row": 3,
+      "cols": [0, 7]
+    },
+    "walls_reinforced": {
+      "row": 4,
+      "cols": [0, 7]
+    },
+    "stairs_pipes": {
+      "row": 5,
+      "cols": [0, 7]
+    },
+    "doors_terminals": {
+      "row": 6,
+      "cols": [0, 7]
+    },
+    "decals": {
+      "row": 7,
+      "cols": [0, 7]
+    },
+    "traps": {
+      "row": 8,
+      "cols": [0, 7]
+    }
+  },
+  "autotile_rows": {
+    "ground": 9,
+    "walls": 10
+  },
+  "door_types": {
+    "standard": {
+      "row": 6,
+      "col": 0
+    },
+    "reinforced": {
+      "row": 6,
+      "col": 1
+    },
+    "electronic": {
+      "row": 6,
+      "col": 2
+    }
+  },
+  "parallax": {
+    "enabled": true,
+    "layers": [
+      {
+        "speed": 0.2,
+        "color": [20, 25, 40]
+      },
+      {
+        "speed": 0.5,
+        "color": [40, 45, 60]
+      },
+      {
+        "speed": 0.8,
+        "color": [60, 65, 80]
+      }
+    ]
+  }
+}
