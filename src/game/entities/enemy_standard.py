@@ -59,7 +59,9 @@ class EnemyStandard(Enemy):
     def _load_spritesheet(self):
         """Carica il spritesheet del nemico"""
         try:
-            self.spritesheet = pygame.image.load("C:\\Users\\pietr\\pietrom\\nemico1.png").convert_alpha()
+            import os
+            sprite_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'assets', 'sprites', 'nemico1.png')
+            self.spritesheet = pygame.image.load(sprite_path).convert_alpha()
             print(f"Spritesheet nemico caricato: {self.spritesheet.get_size()}")
         except Exception as e:
             print(f"Errore caricamento spritesheet nemico: {e}")

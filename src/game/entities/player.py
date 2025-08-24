@@ -410,7 +410,7 @@ class Player(Entity):
     def check_item_collisions(self):
         """Check for collisions with items and apply effects"""
         player_rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        collected_items = self.item_manager.check_collisions(player_rect)
+        collected_items = self.item_manager.check_collision(player_rect)
         
         for item in collected_items:
             self.apply_item_effect(item)

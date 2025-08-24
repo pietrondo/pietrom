@@ -277,6 +277,25 @@ class ItemManager:
         """
         return self.active_powerups.copy()
     
+    def has_active_power_up(self, item_type: ItemType) -> bool:
+        """Controlla se un power-up è attivo
+        
+        Args:
+            item_type: Tipo di item da controllare
+            
+        Returns:
+            True se il power-up è attivo
+        """
+        # Converti ItemType in ItemEffect
+        effect_mapping = {
+            ItemType.DAMAGE_BOOST: ItemEffect.TEMPORARY_DAMAGE,
+            ItemType.SPEED_BOOST: ItemEffect.TEMPORARY_SPEED,
+            ItemType.SHIELD: ItemEffect.TEMPORARY_SHIELD
+        }
+        
+        effect = effect_mapping.get(item_type)
+        return effect is not None and effect in self.active_powerups
+    
     def get_permanent_upgrades(self) -> Dict[ItemType, bool]:
         """Ottiene gli upgrade permanenti
         
