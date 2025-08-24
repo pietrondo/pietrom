@@ -64,11 +64,13 @@ class PlayerAnimator:
         sheet_width, sheet_height = self.sprite_sheet.get_size()
         print(f"Player spritesheet size: {sheet_width}x{sheet_height}")
         
-        # Assumendo 6 sprite in orizzontale per il player
-        original_width = sheet_width // 6
-        original_height = sheet_height
+        # Assumendo griglia 6x6 per il player (6 colonne, 6 righe)
+        self.sprites_per_row = 6
+        self.sprites_per_col = 6
+        original_width = sheet_width // self.sprites_per_row
+        original_height = sheet_height // self.sprites_per_col
         
-        # Scala a dimensioni ragionevoli per il gameplay (target: 32x64)
+        # Scala a dimensioni ragionevoli per il gameplay
         self.target_width = 32
         self.target_height = 64
         self.sprite_width = original_width

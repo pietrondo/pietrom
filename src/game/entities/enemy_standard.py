@@ -28,21 +28,22 @@ class EnemyStandard(Enemy):
         self.spritesheet = None
         self._load_spritesheet()
         
-        # Aggiorna dimensioni entità basate sui frame
-        if hasattr(self, 'frame_width') and hasattr(self, 'frame_height'):
-            self.width = self.frame_width
-            self.height = self.frame_height
-            # Collision box leggermente più piccola del frame
-            self.collision_width = int(self.frame_width * 0.8)
-            self.collision_height = int(self.frame_height * 0.8)
-            self.collision_offset_x = (self.frame_width - self.collision_width) // 2
-            self.collision_offset_y = (self.frame_height - self.collision_height) // 2
+        # Aggiorna dimensioni nemico basate sulle dimensioni target
+        if hasattr(self, 'target_width') and hasattr(self, 'target_height'):
+            self.width = self.target_width
+            self.height = self.target_height
+            self.collision_width = self.target_width
+            self.collision_height = self.target_height
+            self.collision_offset_x = 0
+            self.collision_offset_y = 0
         else:
-            # Fallback per dimensioni 32x32
-            self.collision_width = 28
-            self.collision_height = 28
-            self.collision_offset_x = 2
-            self.collision_offset_y = 2
+            # Fallback alle dimensioni di default
+            self.width = 32
+            self.height = 32
+            self.collision_width = 32
+            self.collision_height = 32
+            self.collision_offset_x = 0
+            self.collision_offset_y = 0
         
         
         
@@ -83,7 +84,13 @@ class EnemyStandard(Enemy):
             self.total_rows = 5
             self.frame_width = sheet_width // self.frames_per_row
             self.frame_height = sheet_height // self.total_rows
-            print(f"Enemy frame size: {self.frame_width}x{self.frame_height}")
+            
+            # Dimensioni target per il gameplay
+            self.target_width = 32
+            self.target_height = 32
+            
+            print(f"Enemy frame original: {self.frame_width}x{self.frame_height}")
+            print(f"Enemy frame target: {self.target_width}x{self.target_height}")
             
         except Exception as e:
             print(f"Errore caricamento spritesheet nemico: {e}")
@@ -134,14 +141,20 @@ class EnemyStandard(Enemy):
         }
         
     def _extract_frames(self, row: int, frame_count: int) -> List[pygame.Surface]:
-        """Estrae i frame da una riga del spritesheet"""
+        """Estrae i frame da una riga del spritesheet e li scala alle dimensioni target"""
         frames = []
         for i in range(frame_count):
-            # Usa le dimensioni calcolate dinamicamente
+            # Estrai frame originale
             frame = pygame.Surface((self.frame_width, self.frame_height), pygame.SRCALPHA)
             source_rect = pygame.Rect(i * self.frame_width, row * self.frame_height, 
                                     self.frame_width, self.frame_height)
             frame.blit(self.spritesheet, (0, 0), source_rect)
+            
+            # Scala alle dimensioni target se necessario
+            if hasattr(self, 'target_width') and hasattr(self, 'target_height'):
+                if (self.frame_width, self.frame_height) != (self.target_width, self.target_height):
+                    frame = pygame.transform.scale(frame, (self.target_width, self.target_height))
+            
             frames.append(frame)
         return frames
         
