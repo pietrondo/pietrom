@@ -297,6 +297,10 @@ class HUD:
         player_x = minimap_x + minimap_size // 2
         player_y = minimap_y + minimap_size // 2
         pygame.draw.circle(surface, Config.GREEN, (player_x, player_y), 3)
+        
+        # Player direction indicator
+        direction_x = player_x + (10 if player.facing_right else -10)
+        pygame.draw.line(surface, Config.GREEN, (player_x, player_y), (direction_x, player_y), 2)
     
     def _render_permanent_upgrades(self, surface: pygame.Surface, player: 'Player'):
         """Render permanent upgrades acquired by player"""
@@ -330,15 +334,15 @@ class HUD:
                 upgrade_y += 12
         
         # Show active power-ups with timers
-        if player.item_manager.active_power_ups:
+        if player.item_manager.active_powerups:
             powerup_y = upgrade_y + 10
             powerup_title = self.font_small.render("ACTIVE:", True, Config.YELLOW)
             surface.blit(powerup_title, (x, powerup_y))
             powerup_y += 12
             
-            for powerup in player.item_manager.active_power_ups:
+            for powerup in player.item_manager.active_powerups.values():
                 time_left = powerup.remaining_time
-                powerup_name = powerup.power_up_type.name.replace('_', ' ').title()
+                powerup_name = powerup.effect.name.replace('_', ' ').title()
                 powerup_text = self.font_small.render(f"• {powerup_name}: {time_left:.1f}s", True, Config.MAGENTA)
                 surface.blit(powerup_text, (x, powerup_y))
                 powerup_y += 12
@@ -352,7 +356,3 @@ class HUD:
         if hasattr(player, 'keycards'):
             keycards_text = self.font_small.render(f"Keycards: {player.keycards}", True, Config.CYAN)
             surface.blit(keycards_text, (x, info_y + 12))
-        
-        # Player direction indicator
-        direction_x = player_x + (10 if player.facing_right else -10)
-        pygame.draw.line(surface, Config.GREEN, (player_x, player_y), (direction_x, player_y), 2)

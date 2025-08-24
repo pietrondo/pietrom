@@ -158,7 +158,7 @@ class PlayingState(GameState):
             
         # Render items
         if self.player:
-            self.player.item_manager.render(game_surface, camera_offset)
+            self.player.item_manager.render(game_surface, camera_offset[0], camera_offset[1])
             
         # Blit game surface to main screen
         screen.blit(game_surface, (0, Config.HUD_HEIGHT))

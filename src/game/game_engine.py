@@ -35,6 +35,12 @@ class GameEngine:
         # Game systems
         self.clock = pygame.time.Clock()
         self.asset_manager = AssetManager()
+        
+        # Load essential sprites
+        self.asset_manager.load_sprite('object', 'assets/sprites/object.png')
+        self.asset_manager.load_sprite('player', 'assets/sprites/player.png')
+        self.asset_manager.load_sprite('enemy', 'assets/sprites/nemico1.png')
+        
         self.input_manager = InputManager()
         
         # Game state management
