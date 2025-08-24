@@ -82,6 +82,9 @@ class HUD:
         # Render collectibles
         self._render_collectibles(surface, player)
         
+        # Render permanent upgrades
+        self._render_permanent_upgrades(surface, player)
+        
         # Render damage indicator
         self._render_damage_indicator(surface)
         
@@ -294,6 +297,61 @@ class HUD:
         player_x = minimap_x + minimap_size // 2
         player_y = minimap_y + minimap_size // 2
         pygame.draw.circle(surface, Config.GREEN, (player_x, player_y), 3)
+    
+    def _render_permanent_upgrades(self, surface: pygame.Surface, player: 'Player'):
+        """Render permanent upgrades acquired by player"""
+        if not hasattr(player, 'item_manager'):
+            return
+            
+        x, y = Config.SCREEN_WIDTH - 150, Config.SCREEN_HEIGHT - 120
+        
+        # Background panel for upgrades
+        panel_width, panel_height = 140, 100
+        panel_rect = pygame.Rect(x - 10, y - 10, panel_width, panel_height)
+        pygame.draw.rect(surface, (0, 0, 0, 120), panel_rect)
+        pygame.draw.rect(surface, Config.CYAN, panel_rect, 1)
+        
+        # Title
+        title_text = self.font_small.render("UPGRADES", True, Config.CYAN)
+        surface.blit(title_text, (x, y))
+        
+        # List permanent upgrades
+        upgrade_y = y + 15
+        upgrades = player.item_manager.permanent_upgrades
+        
+        if not upgrades:
+            no_upgrades_text = self.font_small.render("None", True, Config.GRAY)
+            surface.blit(no_upgrades_text, (x, upgrade_y))
+        else:
+            for upgrade in upgrades:
+                upgrade_name = upgrade.name.replace('_', ' ').title()
+                upgrade_text = self.font_small.render(f"• {upgrade_name}", True, Config.GREEN)
+                surface.blit(upgrade_text, (x, upgrade_y))
+                upgrade_y += 12
+        
+        # Show active power-ups with timers
+        if player.item_manager.active_power_ups:
+            powerup_y = upgrade_y + 10
+            powerup_title = self.font_small.render("ACTIVE:", True, Config.YELLOW)
+            surface.blit(powerup_title, (x, powerup_y))
+            powerup_y += 12
+            
+            for powerup in player.item_manager.active_power_ups:
+                time_left = powerup.remaining_time
+                powerup_name = powerup.power_up_type.name.replace('_', ' ').title()
+                powerup_text = self.font_small.render(f"• {powerup_name}: {time_left:.1f}s", True, Config.MAGENTA)
+                surface.blit(powerup_text, (x, powerup_y))
+                powerup_y += 12
+        
+        # Show credits and keycards
+        info_y = y + 75
+        if hasattr(player, 'credits'):
+            credits_text = self.font_small.render(f"Credits: {player.credits}", True, Config.YELLOW)
+            surface.blit(credits_text, (x, info_y))
+        
+        if hasattr(player, 'keycards'):
+            keycards_text = self.font_small.render(f"Keycards: {player.keycards}", True, Config.CYAN)
+            surface.blit(keycards_text, (x, info_y + 12))
         
         # Player direction indicator
         direction_x = player_x + (10 if player.facing_right else -10)

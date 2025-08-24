@@ -53,6 +53,9 @@ class PlayingState(GameState):
         # Create enemies
         self._spawn_enemies()
         
+        # Spawn items
+        self._spawn_items()
+        
         # Create HUD
         self.hud = HUD(self.game_engine.get_asset_manager())
         
@@ -152,6 +155,10 @@ class PlayingState(GameState):
         for enemy in self.enemies:
             enemy.render(game_surface, camera_offset)
             
+        # Render items
+        if self.player:
+            self.player.item_manager.render(game_surface, camera_offset)
+            
         # Blit game surface to main screen
         screen.blit(game_surface, (0, Config.HUD_HEIGHT))
         
@@ -188,6 +195,31 @@ class PlayingState(GameState):
                 enemy = EnemyStandard(x, y, asset_manager)  # Default al nuovo nemico
                 
             self.enemies.append(enemy)
+    
+    def _spawn_items(self):
+        """Spawn test items in the level"""
+        if not self.player:
+            return
+            
+        # Spawn various test items around the map
+        item_spawns = [
+            (20 * 32, 10 * 32, 'medikit'),
+            (40 * 32, 8 * 32, 'ammo'),
+            (12 * 32, 6 * 32, 'shield'),
+            (48 * 32, 14 * 32, 'damage_boost'),
+            (28 * 32, 12 * 32, 'speed_boost'),
+            (8 * 32, 9 * 32, 'jetpack'),
+            (52 * 32, 7 * 32, 'armor'),
+            (16 * 32, 14 * 32, 'weapon_mod'),
+            (36 * 32, 6 * 32, 'keycard'),
+            (44 * 32, 11 * 32, 'credits'),
+            (24 * 32, 8 * 32, 'checkpoint'),
+            (32 * 32, 16 * 32, 'artifact'),
+        ]
+        
+        for spawn_point in item_spawns:
+            x, y, item_type = spawn_point
+            self.player.item_manager.spawn_item(x, y, item_type)
             
     def _save_game(self):
         """Save current game state"""

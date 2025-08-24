@@ -15,6 +15,7 @@ from .entity import Entity
 from .projectile import Bullet, Rocket
 from .weapon import Weapon, WeaponType
 from .animation import PlayerAnimator, AnimationState
+from .item_manager import ItemManager
 
 if TYPE_CHECKING:
     # from ..world.level import Level  # Removed - now using collision_rects
@@ -74,6 +75,11 @@ class Player(Entity):
         self.is_using_utility = False
         self.action_timer = 0.0
         
+        # Item system
+        self.item_manager = ItemManager(asset_manager)
+        self.credits = 0
+        self.keycards = 0
+        
     def _init_weapons(self):
         """Initialize player weapons"""
         # Start with pistol
@@ -129,6 +135,12 @@ class Player(Entity):
         # Update utilities
         self._update_utilities(dt)
         
+        # Update item system
+        self.item_manager.update(dt)
+        
+        # Check for item collisions
+        self.check_item_collisions()
+        
         # Update animation state
         self._update_animation_state()
         
@@ -148,7 +160,8 @@ class Player(Entity):
         horizontal, _ = input_manager.get_movement_input()
         
         if horizontal != 0:
-            self.vel_x = horizontal * self.speed
+            speed_multiplier = self.get_speed_multiplier()
+            self.vel_x = horizontal * self.speed * speed_multiplier
             self.facing_right = horizontal > 0
             self.is_moving = True
         else:
@@ -394,21 +407,67 @@ class Player(Entity):
         beam_rect.center = ((screen_x + beam_end_x) // 2, screen_y)
         surface.blit(beam_surface, beam_rect)
         
-    def collect_item(self, item_type: str, value: int = 1):
-        """Collect an item"""
-        if item_type == "health":
-            self.heal(value)
-        elif item_type == "ammo_pistol":
-            self.add_ammo(WeaponType.PISTOL, value)
-        elif item_type == "ammo_shotgun":
-            self.add_ammo(WeaponType.SHOTGUN, value)
-        elif item_type == "ammo_rocket":
-            self.add_ammo(WeaponType.ROCKET_LAUNCHER, value)
-        elif item_type == "key":
-            self.keys_collected += value
-        elif item_type == "jetpack":
+    def check_item_collisions(self):
+        """Check for collisions with items and apply effects"""
+        player_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        collected_items = self.item_manager.check_collisions(player_rect)
+        
+        for item in collected_items:
+            self.apply_item_effect(item)
+    
+    def apply_item_effect(self, item):
+        """Apply the effect of a collected item"""
+        from .item import ItemType
+        
+        if item.item_type == ItemType.MEDIKIT:
+            self.heal(25)
+        elif item.item_type == ItemType.AMMO:
+            # Add ammo to current weapon
+            current_weapon = self.get_current_weapon()
+            if current_weapon:
+                current_weapon.add_ammo(30)
+        elif item.item_type == ItemType.KEYCARD:
+            self.keycards += 1
+        elif item.item_type == ItemType.CREDITS:
+            self.credits += 100
+        elif item.item_type == ItemType.SHIELD:
+            self.item_manager.add_power_up(item.item_type, item.effect.duration)
+        elif item.item_type == ItemType.DAMAGE_BOOST:
+            self.item_manager.add_power_up(item.item_type, item.effect.duration)
+        elif item.item_type == ItemType.SPEED_BOOST:
+            self.item_manager.add_power_up(item.item_type, item.effect.duration)
+        elif item.item_type == ItemType.JETPACK:
             self.has_jetpack = True
-        elif item_type == "scanner":
-            self.has_scanner = True
-        elif item_type == "score":
-            self.score += value
+            self.item_manager.add_permanent_upgrade(item.item_type)
+        elif item.item_type == ItemType.ARMOR:
+            self.max_health += 25
+            self.health = min(self.health + 25, self.max_health)
+            self.item_manager.add_permanent_upgrade(item.item_type)
+        elif item.item_type == ItemType.WEAPON_MOD:
+            # Unlock advanced weapon capabilities
+            self.item_manager.add_permanent_upgrade(item.item_type)
+        elif item.item_type == ItemType.CHECKPOINT:
+            # Save current position
+            self.item_manager.save_checkpoint(self.x, self.y)
+        elif item.item_type == ItemType.ARTIFACT:
+            self.score += 1000
+            self.item_manager.add_permanent_upgrade(item.item_type)
+    
+    def get_damage_multiplier(self) -> float:
+        """Get current damage multiplier from power-ups"""
+        from .item import ItemType
+        if self.item_manager.has_active_power_up(ItemType.DAMAGE_BOOST):
+            return 2.0
+        return 1.0
+    
+    def get_speed_multiplier(self) -> float:
+        """Get current speed multiplier from power-ups"""
+        from .item import ItemType
+        if self.item_manager.has_active_power_up(ItemType.SPEED_BOOST):
+            return 1.5
+        return 1.0
+    
+    def has_shield(self) -> bool:
+        """Check if player has active shield"""
+        from .item import ItemType
+        return self.item_manager.has_active_power_up(ItemType.SHIELD)
