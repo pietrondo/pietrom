@@ -14,6 +14,7 @@ from ..game_state import GameState, GameStateType
 from ..entities.player import Player
 from ..entities.enemy import Enemy, MutantEnemy, RobotEnemy, MercenaryEnemy
 from ..entities.enemy_standard import EnemyStandard
+from ..entities.item import ItemType
 from ..world.world_manager import WorldManager
 from ..ui.hud import HUD
 
@@ -203,18 +204,18 @@ class PlayingState(GameState):
             
         # Spawn various test items around the map
         item_spawns = [
-            (20 * 32, 10 * 32, 'medikit'),
-            (40 * 32, 8 * 32, 'ammo'),
-            (12 * 32, 6 * 32, 'shield'),
-            (48 * 32, 14 * 32, 'damage_boost'),
-            (28 * 32, 12 * 32, 'speed_boost'),
-            (8 * 32, 9 * 32, 'jetpack'),
-            (52 * 32, 7 * 32, 'armor'),
-            (16 * 32, 14 * 32, 'weapon_mod'),
-            (36 * 32, 6 * 32, 'keycard'),
-            (44 * 32, 11 * 32, 'credits'),
-            (24 * 32, 8 * 32, 'checkpoint'),
-            (32 * 32, 16 * 32, 'artifact'),
+            (20 * 32, 10 * 32, ItemType.MEDIKIT),
+            (40 * 32, 8 * 32, ItemType.AMMO),
+            (12 * 32, 6 * 32, ItemType.SHIELD),
+            (48 * 32, 14 * 32, ItemType.DAMAGE_BOOST),
+            (28 * 32, 12 * 32, ItemType.SPEED_BOOST),
+            (8 * 32, 9 * 32, ItemType.JETPACK),
+            (52 * 32, 7 * 32, ItemType.ARMOR),
+            (16 * 32, 14 * 32, ItemType.WEAPON_MOD),
+            (36 * 32, 6 * 32, ItemType.KEYCARD),
+            (44 * 32, 11 * 32, ItemType.CREDITS),
+            (24 * 32, 8 * 32, ItemType.CHECKPOINT),
+            (32 * 32, 16 * 32, ItemType.ARTIFACT),
         ]
         
         for spawn_point in item_spawns:

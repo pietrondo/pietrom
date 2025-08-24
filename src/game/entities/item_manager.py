@@ -2,7 +2,7 @@ import pygame
 import random
 from typing import List, Dict, Any, Optional
 from .item import Item, ItemType, ItemEffect
-from ..core.config import Config
+from ...core.config import Config
 
 class PowerUp:
     """Classe per gestire power-up temporanei attivi"""

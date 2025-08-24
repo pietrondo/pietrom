@@ -2,7 +2,7 @@ import pygame
 import math
 from enum import Enum
 from typing import Optional, Dict, Any
-from ..core.config import Config
+from ...core.config import Config
 
 class ItemType(Enum):
     """Tipi di oggetti disponibili"""
@@ -160,11 +160,14 @@ class Item:
         row = self.config['sprite_row']
         col = self.config['sprite_col']
         
+        # Ottieni la surface degli oggetti dall'AssetManager
+        object_surface = self.spritesheet.get_sprite('object')
+        
         for i in range(self.frames):
             sprite_x = (col + i) * self.SPRITE_SIZE
             sprite_y = row * self.SPRITE_SIZE
             
-            sprite = self.spritesheet.subsurface(
+            sprite = object_surface.subsurface(
                 sprite_x, sprite_y, self.SPRITE_SIZE, self.SPRITE_SIZE
             ).convert_alpha()
             
