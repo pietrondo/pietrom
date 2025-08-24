@@ -69,6 +69,11 @@ class Player(Entity):
         self.animator = PlayerAnimator("assets/sprites/player.png")
         self.current_animation_state = AnimationState.IDLE
         
+        # Aggiorna dimensioni player basate sullo spritesheet
+        self.width = self.animator.sprite_width
+        self.height = self.animator.sprite_height
+        print(f"Player dimensions updated to: {self.width}x{self.height}")
+        
         # Action states for animations
         self.is_shooting = False
         self.is_changing_weapon = False

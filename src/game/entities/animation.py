@@ -65,9 +65,17 @@ class PlayerAnimator:
         print(f"Player spritesheet size: {sheet_width}x{sheet_height}")
         
         # Assumendo 6 sprite in orizzontale per il player
-        self.sprite_width = sheet_width // 6
-        self.sprite_height = sheet_height
-        print(f"Player sprite size: {self.sprite_width}x{self.sprite_height}")
+        original_width = sheet_width // 6
+        original_height = sheet_height
+        
+        # Scala a dimensioni ragionevoli per il gameplay (target: 32x64)
+        self.target_width = 32
+        self.target_height = 64
+        self.sprite_width = original_width
+        self.sprite_height = original_height
+        
+        print(f"Player sprite original: {original_width}x{original_height}")
+        print(f"Player sprite target: {self.target_width}x{self.target_height}")
         
         self._load_animations()
     
@@ -146,8 +154,12 @@ class PlayerAnimator:
                 self.set_state(AnimationState.IDLE)
     
     def get_current_sprite(self) -> pygame.Surface:
-        """Restituisce lo sprite corrente con la direzione corretta"""
+        """Restituisce lo sprite corrente con la direzione corretta e scalato"""
         sprite = self.animations[self.current_state].get_current_frame()
+        
+        # Scala lo sprite alle dimensioni target
+        if sprite.get_size() != (self.target_width, self.target_height):
+            sprite = pygame.transform.scale(sprite, (self.target_width, self.target_height))
         
         # Specchia lo sprite se il personaggio guarda a sinistra
         if not self.facing_right:
