@@ -21,18 +21,30 @@ class EnemyStandard(Enemy):
     """Nemico standard con sistema di animazioni completo"""
     
     def __init__(self, x: float, y: float, asset_manager):
-        # Dimensioni 32x32 per il tile, collision box 28x28 centrato
+        # Inizializza con dimensioni temporanee, verranno aggiornate dopo il caricamento dello spritesheet
         super().__init__(x, y, 32, 32, asset_manager)
         
-        # Collision box più precisa (28x28 centrata)
-        self.collision_width = 28
-        self.collision_height = 28
-        self.collision_offset_x = 2  # (32-28)/2
-        self.collision_offset_y = 2  # (32-28)/2
-        
-        # Carica spritesheet nemico
+        # Carica spritesheet per ottenere le dimensioni corrette
         self.spritesheet = None
         self._load_spritesheet()
+        
+        # Aggiorna dimensioni entità basate sui frame
+        if hasattr(self, 'frame_width') and hasattr(self, 'frame_height'):
+            self.width = self.frame_width
+            self.height = self.frame_height
+            # Collision box leggermente più piccola del frame
+            self.collision_width = int(self.frame_width * 0.8)
+            self.collision_height = int(self.frame_height * 0.8)
+            self.collision_offset_x = (self.frame_width - self.collision_width) // 2
+            self.collision_offset_y = (self.frame_height - self.collision_height) // 2
+        else:
+            # Fallback per dimensioni 32x32
+            self.collision_width = 28
+            self.collision_height = 28
+            self.collision_offset_x = 2
+            self.collision_offset_y = 2
+        
+        
         
         # Sistema animazioni
         self.animations = {}
@@ -62,12 +74,24 @@ class EnemyStandard(Enemy):
             import os
             sprite_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'assets', 'sprites', 'nemico1.png')
             self.spritesheet = pygame.image.load(sprite_path).convert_alpha()
-            print(f"Spritesheet nemico caricato: {self.spritesheet.get_size()}")
+            sheet_width, sheet_height = self.spritesheet.get_size()
+            print(f"Spritesheet nemico caricato: {sheet_width}x{sheet_height}")
+            
+            # Calcola dimensioni frame (assumendo layout a griglia)
+            # Per un nemico, assumiamo 10 frame per riga e 5 righe
+            self.frames_per_row = 10
+            self.total_rows = 5
+            self.frame_width = sheet_width // self.frames_per_row
+            self.frame_height = sheet_height // self.total_rows
+            print(f"Enemy frame size: {self.frame_width}x{self.frame_height}")
+            
         except Exception as e:
             print(f"Errore caricamento spritesheet nemico: {e}")
             # Crea un placeholder rosso
             self.spritesheet = pygame.Surface((320, 32), pygame.SRCALPHA)
             self.spritesheet.fill((255, 0, 0, 128))
+            self.frame_width = 32
+            self.frame_height = 32
             
     def _setup_animations(self):
         """Configura tutte le animazioni del nemico"""
@@ -113,8 +137,10 @@ class EnemyStandard(Enemy):
         """Estrae i frame da una riga del spritesheet"""
         frames = []
         for i in range(frame_count):
-            frame = pygame.Surface((32, 32), pygame.SRCALPHA)
-            source_rect = pygame.Rect(i * 32, row * 32, 32, 32)
+            # Usa le dimensioni calcolate dinamicamente
+            frame = pygame.Surface((self.frame_width, self.frame_height), pygame.SRCALPHA)
+            source_rect = pygame.Rect(i * self.frame_width, row * self.frame_height, 
+                                    self.frame_width, self.frame_height)
             frame.blit(self.spritesheet, (0, 0), source_rect)
             frames.append(frame)
         return frames

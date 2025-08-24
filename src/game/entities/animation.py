@@ -60,9 +60,14 @@ class PlayerAnimator:
         self.previous_state = AnimationState.IDLE
         self.facing_right = True
         
-        # Dimensioni sprite (32x32 pixel)
-        self.sprite_width = 32
-        self.sprite_height = 32
+        # Calcola dimensioni sprite basate sull'immagine effettiva
+        sheet_width, sheet_height = self.sprite_sheet.get_size()
+        print(f"Player spritesheet size: {sheet_width}x{sheet_height}")
+        
+        # Assumendo 6 sprite in orizzontale per il player
+        self.sprite_width = sheet_width // 6
+        self.sprite_height = sheet_height
+        print(f"Player sprite size: {self.sprite_width}x{self.sprite_height}")
         
         self._load_animations()
     
